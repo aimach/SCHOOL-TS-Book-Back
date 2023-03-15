@@ -1,0 +1,22 @@
+GET http://localhost:5000/api/skill
+
+###
+
+POST http://localhost:5000/api/skill
+Content-Type: application/json
+
+{
+  "name": "Express"
+}
+
+###
+
+PUT http://localhost:5000/api/skill/2
+Content-Type: application/json
+
+{
+  "name": "Javascript"
+}
+
+###
+DELETE http://localhost:5000/api/skill/6

@@ -28,13 +28,13 @@
       "line": 15
     },
     {
-      "file": ".eslintrc.js",
-      "description": "Here we configure the eslint rules",
+      "file": "tsconfig.json",
+      "description": "Here we configure typescript, https://www.typescriptlang.org/tsconfig",
       "line": 1
     },
     {
-      "file": "tsconfig.json",
-      "description": "Here we configure typescript, https://www.typescriptlang.org/tsconfig",
+      "file": ".eslintrc.js",
+      "description": "Here we configure the eslint rules",
       "line": 1
     }
   ]

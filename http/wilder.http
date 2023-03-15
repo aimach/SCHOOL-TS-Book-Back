@@ -1,0 +1,40 @@
+GET http://localhost:5000/api/wilder
+
+###
+
+POST http://localhost:5000/api/wilder
+Content-Type: application/json
+
+{
+  "name": "test",
+  "email": "test@federation.com",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+}
+
+###
+
+POST http://localhost:5000/api/wilder/12
+Content-Type: application/json
+
+{
+  "skills": [2, 3]
+}
+###
+
+
+
+PUT http://localhost:5000/api/wilder/4
+Content-Type: application/json
+
+{
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+}
+
+###
+
+DELETE http://localhost:5000/api/wilder/8
+
+###
+
+DELETE http://localhost:5000/api/wilder/5/skill/8
+
