@@ -21,6 +21,9 @@ export default class Wilder {
   @Column()
   description: string;
 
+  @Column({ nullable: true })
+  avatar: string;
+
   @ManyToMany(() => Skill, { eager: true })
   @JoinTable()
   skills: Skill[];
