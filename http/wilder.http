@@ -35,7 +35,7 @@ PUT http://localhost:5000/api/wilder/4/avatar
 Content-Type: image/png
 
 {
-  "avatar": "profile.png"
+  "avatar": "hello.png"
 }
 
 ###

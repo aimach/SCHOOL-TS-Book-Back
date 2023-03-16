@@ -2,12 +2,15 @@ import { Request, Response } from "express";
 import dataSource from "../utils";
 import Skill from "../entity/Skill";
 import Wilder from "../entity/Wilder";
+import * as fs from "fs";
+import { v4 as uuidv4 } from "uuid";
 
 interface aWilder {
   id: number;
   name: string;
   email: string;
   description: string;
+  avatar: string;
   skills: object[];
 }
 
@@ -75,6 +78,29 @@ export default class WilderController {
     }
   }
 
+  async addAvatarToWilder(req: any, res: any): Promise<void> {
+    try {
+      const { idWilder } = req.params;
+      const wilderToUpdate = await dataSource
+        .getRepository(Wilder)
+        .findOneBy({ id: idWilder });
+      if (wilderToUpdate == null) {
+        res.status(404).send("Wilder not found");
+      }
+      const originalname: string = req.file.originalname;
+      const filename: string = req.file.filename;
+      const newName: string = `uploads/${uuidv4()}-${originalname}`;
+      fs.rename(`uploads/${filename}`, newName, async () => {
+        await dataSource
+          .getRepository(Wilder)
+          .update(idWilder, { avatar: newName });
+        res.send("File uploaded");
+      });
+    } catch (err) {
+      res.status(404).send("Error while uploading avatar");
+    }
+  }
+
   async addSkillToWilder(
     req: Request<{ idWilder: number }>,
     res: Response
@@ -87,7 +113,6 @@ export default class WilderController {
       if (wilderToUpdate == null) {
         res.status(404).send("Wilder not found");
       }
-      console.log(req.body);
       req.body.skills.forEach(async (e: number) => {
         const skillToAdd = await dataSource
           .getRepository(Skill)

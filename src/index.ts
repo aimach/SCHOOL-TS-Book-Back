@@ -1,11 +1,9 @@
-import express, { RequestHandler } from "express";
+import express from "express";
 import cors from "cors";
 import dataSource from "./utils";
 import multer from "multer";
 import SkillController from "./controller/skill";
 import WilderController from "./controller/wilder";
-import * as fs from "fs";
-import { v4 as uuidv4 } from "uuid";
 
 const app = express();
 const port = 5000;
@@ -13,7 +11,7 @@ const upload = multer({ dest: "uploads/" });
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("../uploads"));
+app.use("/uploads", express.static("uploads"));
 
 // wilder
 const wilderController = new WilderController();
@@ -23,19 +21,7 @@ app.post("/api/wilder/:idWilder", wilderController.addSkillToWilder);
 app.put(
   "/api/wilder/:idWilder/avatar",
   upload.single("avatar"),
-  (req: any, res: any) => {
-    const originalname: string = req.file.originalname;
-    const filename: string = req.file.filename;
-    console.log(filename, originalname);
-    fs.rename(
-      `uploads/${filename}`,
-      `uploads/${uuidv4()}-${originalname}`,
-      (err) => {
-        if (err) throw err;
-        res.send("File uploaded");
-      }
-    );
-  }
+  wilderController.addAvatarToWilder
 );
 app.put("/api/wilder/:id", wilderController.update);
 app.delete("/api/wilder/:id", wilderController.delete);
