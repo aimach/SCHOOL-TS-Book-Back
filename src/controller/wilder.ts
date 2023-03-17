@@ -138,21 +138,26 @@ export default class WilderController {
   ): Promise<void> {
     try {
       const { idWilder, idSkill } = req.params;
+
+      // vérification du wilder
       const wilderToUpdate = await dataSource
         .getRepository(Wilder)
         .findOneBy({ id: idWilder });
       if (wilderToUpdate == null) {
         res.status(404).send("Wilder not found");
       }
+
+      // vérification du skill
       const skillToDelete = await dataSource
         .getRepository(Skill)
         .findOneBy({ id: idSkill });
       if (skillToDelete == null) {
         res.status(404).send("Skill not found");
       }
-      if (wilderToUpdate !== null) {
+
+      if (wilderToUpdate !== null && skillToDelete !== null) {
         const skillsToUpdate = wilderToUpdate.skills.filter(
-          (skill) => skill.id !== idSkill
+          (skill) => skill.id !== skillToDelete.id
         );
         wilderToUpdate.skills = skillsToUpdate;
         await dataSource.getRepository(Wilder).save(wilderToUpdate);

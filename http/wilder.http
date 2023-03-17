@@ -44,5 +44,5 @@ DELETE http://localhost:5000/api/wilder/8
 
 ###
 
-DELETE http://localhost:5000/api/wilder/5/skill/8
+DELETE http://localhost:5000/api/wilder/4/skill/11
 

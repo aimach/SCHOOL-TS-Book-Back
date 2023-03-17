@@ -19,4 +19,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:5000/api/skill/6
+DELETE http://localhost:5000/api/skill/14
