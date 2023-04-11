@@ -139,6 +139,8 @@ export default class WilderController {
     try {
       const { idWilder, idSkill } = req.params;
 
+      console.log(idSkill);
+
       // vérification du wilder
       const wilderToUpdate = await dataSource
         .getRepository(Wilder)
