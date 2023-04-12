@@ -1,67 +1,17 @@
-import express from "express";
-import cors from "cors";
 import dataSource from "./utils";
 import multer from "multer";
-import SkillController from "./controller/skill";
-import WilderController from "./controller/wilder";
 const { ApolloServer, gql } = require("apollo-server");
 import Wilder from "./entity/Wilder";
 import Skill from "./entity/Skill";
 
-// const app = express();
-// const port = 5000;
-// const upload = multer({ dest: "uploads/" });
-
-// app.use(cors());
-// app.use(express.json());
-// app.use("/uploads", express.static("uploads"));
-
-// wilder
-// const wilderController = new WilderController();
-// app.get("/api/wilder", wilderController.read);
-// app.post("/api/wilder", wilderController.create);
-// app.post("/api/wilder/:idWilder", wilderController.addSkillToWilder);
-// app.put(
-//   "/api/wilder/:idWilder/avatar",
-//   upload.single("avatar"),
-//   wilderController.addAvatarToWilder
-// );
-// app.put("/api/wilder/:id", wilderController.update);
-// app.delete("/api/wilder/:id", wilderController.delete);
-// app.delete(
-//   "/api/wilder/:idWilder/skill/:idSkill",
-//   wilderController.deleteSkillToWilder
-// );
-
-// skill
-// const skillController = new SkillController();
-
-// app.get("/api/skill", skillController.read);
-// app.post("/api/skill", skillController.create);
-// app.put("/api/skill/:id", skillController.update);
-// app.delete("/api/skill/:id", skillController.delete);
-
-// const start = async (): Promise<void> => {
-//   await dataSource.initialize();
-//   app.listen(port, () => console.log(`Server started on ${port}`));
-// };
-
-// void start();
-
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
 const typeDefs = gql`
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
-  # This "Book" type defines the queryable fields for every book in our data source.
   type Wilder {
     id: ID
     name: String
     email: String
     description: String
     avatar: String
-    # skills: [Skill]
+    skills: [Skill]
   }
 
   type Skill {
@@ -69,31 +19,141 @@ const typeDefs = gql`
     name: String
   }
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
+  # GET
   type Query {
-    wilders: [Wilder]
-    skills: [Skill]
+    getAllWilders: [Wilder]
+    getWilderById(id: ID): Wilder
+    getAllSkills: [Skill]
+    getSkillById(id: ID): Skill
+  }
+  # POST-PATCH-PUT-DELETE
+  type Mutation {
+    createWilder(name: String, email: String, description: String): Wilder
+    updateWilder(
+      id: ID
+      name: String
+      email: String
+      description: String
+    ): Wilder
+    deleteWilder(id: ID): Boolean
+    createSkill(name: String): Skill
+    updateSkill(id: ID, name: String): Skill
+    deleteSkill(id: ID): Boolean
   }
 `;
 
 const resolvers = {
   Query: {
-    wilders: async () => {
+    getAllWilders: async () => {
       try {
-        const WilderToRead = await dataSource.getRepository(Wilder).find();
-        return WilderToRead;
+        const allWilders = await dataSource.getRepository(Wilder).find();
+        return allWilders;
       } catch (err) {
         console.log(err);
       }
     },
-    skills: async () => {
+    getWilderById: async (_: any, args: { id: number }) => {
+      try {
+        const wilderById = await dataSource.getRepository(Wilder).findOneBy({
+          id: args.id,
+        });
+        return wilderById;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    getAllSkills: async () => {
       try {
         const SkillToRead = await dataSource.getRepository(Skill).find();
         return SkillToRead;
       } catch (err) {
         console.log(err);
+      }
+    },
+    getSkillById: async (_: any, args: { id: number }) => {
+      try {
+        const skillById = await dataSource.getRepository(Skill).findOneBy({
+          id: args.id,
+        });
+        return skillById;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+  },
+
+  Mutation: {
+    createWilder: async (
+      _: any,
+      args: { name: string; email: string; description: string }
+    ) => {
+      const wilderToCreate = new Wilder();
+      wilderToCreate.name = args.name;
+      wilderToCreate.email = args.email;
+      wilderToCreate.description = args.description;
+      return await dataSource.getRepository(Wilder).save(wilderToCreate);
+    },
+    updateWilder: async (
+      _: any,
+      args: { id: number; name: string; description: string }
+    ) => {
+      const wilderToUpdate = await dataSource.getRepository(Wilder).findOneBy({
+        id: args.id,
+      });
+      if (wilderToUpdate !== null) {
+        await dataSource
+          .getRepository(Wilder)
+          .update(args.id, { name: args.name, description: args.description });
+        return await dataSource.getRepository(Wilder).findOneBy({
+          id: args.id,
+        });
+      } else {
+        return false;
+      }
+    },
+
+    deleteWilder: async (_: any, args: { id: number }) => {
+      const wilderToDelete = await dataSource.getRepository(Wilder).findOneBy({
+        id: args.id,
+      });
+      if (wilderToDelete !== null) {
+        await dataSource.getRepository(Wilder).delete(args.id);
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    createSkill: async (_: any, args: { name: string }) => {
+      const skillToCreate = new Skill();
+      skillToCreate.name = args.name;
+      return await dataSource.getRepository(Skill).save(skillToCreate);
+    },
+    updateSkill: async (_: any, args: { id: number; name: string }) => {
+      const skillToUpdate = await dataSource.getRepository(Skill).findOneBy({
+        id: args.id,
+      });
+      if (skillToUpdate !== null) {
+        await dataSource
+          .getRepository(Skill)
+          .update(args.id, { name: args.name });
+        return await dataSource.getRepository(Skill).findOneBy({
+          id: args.id,
+        });
+      } else {
+        return false;
+      }
+    },
+    deleteSkill: async (_: any, args: { id: number }) => {
+      const skillToDelete = await dataSource.getRepository(Skill).findOneBy({
+        id: args.id,
+      });
+      if (skillToDelete !== null) {
+        await dataSource.getRepository(Skill).delete(args.id);
+        return true;
+      } else {
+        return false;
       }
     },
   },
@@ -110,13 +170,6 @@ const server = new ApolloServer({
   resolvers,
   csrfPrevention: true,
   cache: "bounded",
-  /**
-   * What's up with this embed: true option?
-   * These are our recommended settings for using AS;
-   * they aren't the defaults in AS3 for backwards-compatibility reasons but
-   * will be the defaults in AS4. For production environments, use
-   * ApolloServerPluginLandingPageProductionDefault instead.
-   **/
   plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
 });
 
