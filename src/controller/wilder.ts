@@ -15,6 +15,7 @@ interface aWilder {
 }
 
 export default class WilderController {
+  // done
   async create(req: Request, res: Response): Promise<void> {
     try {
       const test = await dataSource
@@ -32,6 +33,7 @@ export default class WilderController {
     }
   }
 
+  // done
   async read(req: Request, res: Response): Promise<void> {
     try {
       const WilderToRead: aWilder[] = await dataSource
@@ -44,6 +46,7 @@ export default class WilderController {
     }
   }
 
+  // done
   async update(req: Request<{ id: number }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -62,6 +65,7 @@ export default class WilderController {
     }
   }
 
+  // done
   async delete(req: Request<{ id: number }>, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -101,6 +105,7 @@ export default class WilderController {
     }
   }
 
+  // done
   async addSkillToWilder(
     req: Request<{ idWilder: number }>,
     res: Response

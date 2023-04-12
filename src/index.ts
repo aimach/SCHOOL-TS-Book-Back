@@ -36,9 +36,11 @@ const typeDefs = gql`
       description: String
     ): Wilder
     deleteWilder(id: ID): Boolean
+    addSkillToWilder(idWilder: ID, idSkill: ID): Wilder
     createSkill(name: String): Skill
     updateSkill(id: ID, name: String): Skill
     deleteSkill(id: ID): Boolean
+    deleteSkillToWilder(idWilder: ID, idSkill: ID): Wilder
   }
 `;
 
@@ -120,6 +122,50 @@ const resolvers = {
       if (wilderToDelete !== null) {
         await dataSource.getRepository(Wilder).delete(args.id);
         return true;
+      } else {
+        return false;
+      }
+    },
+    addSkillToWilder: async (
+      _: any,
+      args: { idWilder: number; idSkill: number }
+    ) => {
+      const wilderToUpdate = await dataSource.getRepository(Wilder).findOneBy({
+        id: args.idWilder,
+      });
+      const skillToAdd = await dataSource.getRepository(Skill).findOneBy({
+        id: args.idSkill,
+      });
+      if (wilderToUpdate !== null && skillToAdd !== null) {
+        wilderToUpdate.skills = [...wilderToUpdate.skills, skillToAdd];
+        await dataSource.getRepository(Wilder).save(wilderToUpdate);
+        return await dataSource.getRepository(Wilder).findOneBy({
+          id: args.idWilder,
+        });
+      } else {
+        return false;
+      }
+    },
+
+    deleteSkillToWilder: async (
+      _: any,
+      args: { idWilder: number; idSkill: number }
+    ) => {
+      const wilderToUpdate = await dataSource.getRepository(Wilder).findOneBy({
+        id: args.idWilder,
+      });
+      const skillToDelete = await dataSource.getRepository(Skill).findOneBy({
+        id: args.idSkill,
+      });
+      if (wilderToUpdate !== null && skillToDelete !== null) {
+        const skillsToUpdate = wilderToUpdate.skills.filter(
+          (skill) => skill.id !== skillToDelete.id
+        );
+        wilderToUpdate.skills = skillsToUpdate;
+        await dataSource.getRepository(Wilder).save(wilderToUpdate);
+        return await dataSource.getRepository(Wilder).findOneBy({
+          id: args.idWilder,
+        });
       } else {
         return false;
       }
